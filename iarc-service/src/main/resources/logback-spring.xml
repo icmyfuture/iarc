@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!--使用application配置-->
+    <springProperty scope="context" name="kafkaBootstrapServers" source="kafka.bootstrapServers"/>
+    <!--其他配置參考 https://github.com/spring-projects/spring-boot/tree/master/spring-boot/src/main/resources/org/springframework/boot/logging/logback -->
+    <!--引入默认的一些设置-->
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <!--web信息-->
+    <logger name="org.springframework" level="WARN"/>
+    <logger name="com.alibaba.dubbo" level="WARN" />
+    <logger name="org.apache.zookeeper" level="WARN" />
+
+    <!--写入日志到控制台的appender,用默认的,但是要去掉charset,否则windows下tomcat下乱码-->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!--写入日志到文件的appender-->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+            <evaluator> <!-- defaults to type ch.qos.logback.classic.boolex.JaninoEventEvaluator -->
+                <expression>return message.contains("javax.BusinessException");</expression>
+            </evaluator>
+            <OnMismatch>DENY</OnMismatch>
+            <OnMatch>NEUTRAL</OnMatch>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!--日志文件输出的文件名,每天一个文件-->
+            <FileNamePattern>${LOG_FILE}.%d{yyyy-MM-dd}.log</FileNamePattern>
+            <!--日志文件保留天数-->
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
+        </encoder>
+        <!--日志文件最大的大小-->
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <MaxFileSize>10MB</MaxFileSize>
+        </triggeringPolicy>
+    </appender>
+
+    <!--异步到文件-->
+    <appender name="asyncFileAppender" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <queueSize>50</queueSize>
+        <appender-ref ref="FILE"/>
+    </appender>
+
+    <!--写日志到kafka-->
+    <appender name="KAFKA" class="ru.sberned.kafkalogback.KafkaAppender">
+        <topic>iarc-log</topic>
+        <bootstrapServers>${kafkaBootstrapServers}</bootstrapServers>
+        <valueSerializer>org.apache.kafka.common.serialization.StringSerializer</valueSerializer>
+        <failOnStartup>false</failOnStartup>
+        <customProp>acks|all</customProp>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level mgt %logger{50} - %msg%n</pattern>
+        </layout>
+    </appender>
+    <!--引用KAFKA配置，并且会异步进行写入-->
+    <appender name="KafkaAsync" class="ch.qos.logback.classic.AsyncAppender">
+        <neverBlock>true</neverBlock>
+        <includeCallerData>true</includeCallerData>
+        <appender-ref ref="KAFKA" />
+    </appender>
+    <!--排除kafka client的log-->
+    <logger name="org.apache.kafka" level="INFO" additivity="false">
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="FILE" />
+    </logger>
+
+    <!--生产环境:打印控制台和输出到文件-->
+    <springProfile name="prd">
+        <root level="INFO">
+            <appender-ref ref="asyncFileAppender"/>
+            <appender-ref ref="KafkaAsync"/>
+        </root>
+    </springProfile>
+
+    <springProfile name="default">
+        <root level="INFO">
+            <appender-ref ref="asyncFileAppender"/>
+            <appender-ref ref="KafkaAsync"/>
+            <appender-ref ref="CONSOLE"/>
+        </root>
+    </springProfile>
+</configuration>

@@ -1,0 +1,6 @@
+{
+    "env": "dev",
+    "dev": {
+        "APIHost": "http://localhost:8001"
+    }
+}

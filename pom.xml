@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<name>root</name>
+	<description>iarc project's root pom</description>
+
+	<groupId>cn.icmyfuture.iarc</groupId>
+	<artifactId>root</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>1.5.10.RELEASE</version>
+		<relativePath/>
+	</parent>
+
+    <modules>
+        <module>iarc-entity</module>
+        <module>iarc-data</module>
+        <module>iarc-service</module>
+        <module>iarc-service-api</module>
+        <module>iarc-zzz</module>
+    </modules>
+
+    <properties>
+		<packaging.type>war</packaging.type>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <java.version>1.8</java.version>
+		<java.version>1.8</java.version>
+
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+
+		<mysql.connector.java.version>6.0.6</mysql.connector.java.version>
+		<druid.version>1.1.2</druid.version>
+		<mybatis.spring.boot.starter.version>1.2.0</mybatis.spring.boot.starter.version>
+		<mssql-jdbc.version>6.1.7.jre8-preview</mssql-jdbc.version>
+
+        <dubbo.version>2.5.8</dubbo.version>
+        <dubbo-spring-boot.version>1.0.0</dubbo-spring-boot.version>
+
+		<swagger2.version>2.6.1</swagger2.version>
+
+        <janino.version>2.5.16</janino.version>
+        <kafka-logback.version>1.0.2</kafka-logback.version>
+
+        <lombok.version>1.16.16</lombok.version>
+
+        <starter-solr.version>1.5.0.RELEASE</starter-solr.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- MySQL START -->
+            <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>${mysql.connector.java.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>druid</artifactId>
+                <version>${druid.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mybatis.spring.boot</groupId>
+                <artifactId>mybatis-spring-boot-starter</artifactId>
+                <version>${mybatis.spring.boot.starter.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>druid-spring-boot-starter</artifactId>
+                <version>${druid.version}</version>
+            </dependency>
+            <!-- MySQL END -->
+
+            <!-- DUBBO START -->
+            <dependency>
+                <groupId>io.dubbo.springboot</groupId>
+                <artifactId>spring-boot-starter-dubbo</artifactId>
+                <version>${dubbo-spring-boot.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.101tec</groupId>
+                        <artifactId>zkclient</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>dubbo</artifactId>
+                <version>${dubbo.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>spring</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>com.101tec</groupId>
+                <artifactId>zkclient</artifactId>
+                <version>0.10</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-api</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-log4j12</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <!-- DUBBO END -->
+
+            <!-- springfox START -->
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-swagger2</artifactId>
+                <version>${swagger2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-swagger-ui</artifactId>
+                <version>${swagger2.version}</version>
+            </dependency>
+            <!-- springfox END -->
+
+            <!--kafka logback-->
+            <dependency>
+                <groupId>ru.sberned</groupId>
+                <artifactId>kafka-logback</artifactId>
+                <version>${kafka-logback.version}</version>
+            </dependency>
+
+            <!-- Logback EvaluatorFilter 需要使用 -->
+            <dependency>
+                <groupId>org.codehaus.janino</groupId>
+                <artifactId>janino</artifactId>
+                <version>${janino.version}</version>
+            </dependency>
+
+            <!-- 其他 START -->
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+            </dependency>
+            <!-- 其他 END -->
+
+            <!--solr-->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-data-solr</artifactId>
+                <version>${starter-solr.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+	<build>
+		<plugins>
+			<!--发布到私有仓库依赖的插件-->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<configuration>
+					<skip>false</skip>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>

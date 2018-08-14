@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.icmyfuture.iarc.data.dao.UserDao">
+    <select id="getAllUsers" resultType="cn.icmyfuture.iarc.entity.User" parameterType="int">
+        SELECT
+        u.id,
+        u.name
+        FROM ijava.user u
+    </select>
+
+    <select id="getUser" resultType="cn.icmyfuture.iarc.entity.User">
+        SELECT
+          u.id,
+          u.name
+        FROM ijava.user u
+        WHERE id = #{id};
+    </select>
+
+    <insert id="insertUser"
+            parameterType="cn.icmyfuture.iarc.entity.User" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO ijava.user
+        (
+          Name
+        )
+        VALUES
+        (
+          #{name}
+        );
+    </insert>
+</mapper>
