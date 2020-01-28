@@ -1,6 +1,6 @@
 package cn.icmyfuture.iarc.openapi;
 
-import cn.icmyfuture.iarc.openapi.cn.icmyfuture.iarc.openapi.netty.NettyServer;
+import cn.icmyfuture.iarc.openapi.netty.NettyServer;
 import io.netty.channel.ChannelFuture;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
