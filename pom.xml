@@ -53,7 +53,7 @@
 
         <starter-solr.version>1.5.0.RELEASE</starter-solr.version>
 
-        <netty.version>4.1.31.Final</netty.version>
+        <netty.version>4.1.42.Final</netty.version>
     </properties>
 
     <dependencyManagement>
