@@ -1,4 +1,4 @@
-package cn.icmyfuture.iarc.openapi.configuration;
+package cn.icmyfuture.iarc.openapi.netty;
 
 import cn.icmyfuture.iarc.openapi.netty.iohandler.InterceptorHandler;
 import cn.icmyfuture.iarc.openapi.netty.iohandler.FilterLogginglHandler;
@@ -16,15 +16,12 @@ import io.netty.handler.codec.http.HttpServerCodec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.event.ApplicationStartedEvent;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 
-
-@Configuration
-public class NettyHttpServer implements ApplicationListener<ApplicationStartedEvent> {
+@Component
+public class NettyHttpServer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NettyHttpServer.class);
 
@@ -37,13 +34,12 @@ public class NettyHttpServer implements ApplicationListener<ApplicationStartedEv
     @Resource
     private HttpServerHandler httpServerHandler;
 
-    @Override
-    public void onApplicationEvent(ApplicationStartedEvent event) {
-
+    public void start() {
         ServerBootstrap bootstrap = new ServerBootstrap();
+        //boss事件轮询线程组
         EventLoopGroup bossGroup = new NioEventLoopGroup();
+        //worker事件轮询线程组
         EventLoopGroup workerGroup = new NioEventLoopGroup();
-
         bootstrap.group(bossGroup, workerGroup);
         bootstrap.channel(NioServerSocketChannel.class);
         //channel的属性配置
@@ -78,12 +74,12 @@ public class NettyHttpServer implements ApplicationListener<ApplicationStartedEv
         });
         //通过引入监听器对象监听future状态，当future任务执行完成后会调用-》{}内的方法
         channelFuture.channel().closeFuture().addListener(future -> {
-            LOGGER.info("Netty Http Server Start Shutdown ............");
             /**
              * 优雅关闭
              */
-            bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
+            bossGroup.shutdownGracefully();
+            LOGGER.info("Netty Http Server Start Shutdown ............");
         });
     }
 }

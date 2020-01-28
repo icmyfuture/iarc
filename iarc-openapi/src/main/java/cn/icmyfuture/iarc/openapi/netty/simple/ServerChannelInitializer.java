@@ -1,4 +1,4 @@
-package cn.icmyfuture.iarc.openapi.netty;
+package cn.icmyfuture.iarc.openapi.netty.simple;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;

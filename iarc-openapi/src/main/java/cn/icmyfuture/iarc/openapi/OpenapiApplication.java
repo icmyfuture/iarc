@@ -1,8 +1,7 @@
 package cn.icmyfuture.iarc.openapi;
 
-import cn.icmyfuture.iarc.openapi.netty.NettyServer;
+import cn.icmyfuture.iarc.openapi.netty.NettyHttpServer;
 import cn.icmyfuture.iarc.openapi.netty.annotation.NettyHttpHandler;
-import io.netty.channel.ChannelFuture;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -13,7 +12,7 @@ import org.springframework.context.annotation.ComponentScan;
 /**
  * 扫描NettyHttpHandler上的注解
  */
-//@ComponentScan(includeFilters = @ComponentScan.Filter(NettyHttpHandler.class))
+@ComponentScan(includeFilters = @ComponentScan.Filter(NettyHttpHandler.class))
 public class OpenapiApplication implements CommandLineRunner {
 
     public static void main(String[] args) {
@@ -25,12 +24,13 @@ public class OpenapiApplication implements CommandLineRunner {
     }
 
     @Autowired
-    NettyServer nettyServer;
+    NettyHttpServer nettyHttpServer;
 
     @Override
     public void run(String... args) {
-        ChannelFuture start = nettyServer.start();
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> nettyServer.destroy()));
-        start.channel().closeFuture().syncUninterruptibly();
+        nettyHttpServer.start();
+//        ChannelFuture start = nettyServer.start();
+//        Runtime.getRuntime().addShutdownHook(new Thread(() -> nettyServer.destroy()));
+//        start.channel().closeFuture().syncUninterruptibly();
     }
 }

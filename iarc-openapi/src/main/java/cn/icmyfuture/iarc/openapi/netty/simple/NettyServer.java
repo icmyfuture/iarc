@@ -1,4 +1,4 @@
-package cn.icmyfuture.iarc.openapi.netty;
+package cn.icmyfuture.iarc.openapi.netty.simple;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
