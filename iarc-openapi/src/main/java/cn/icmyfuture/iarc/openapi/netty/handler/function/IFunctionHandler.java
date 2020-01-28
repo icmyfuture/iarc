@@ -1,4 +1,4 @@
-package cn.icmyfuture.iarc.openapi.netty.handler;
+package cn.icmyfuture.iarc.openapi.netty.handler.function;
 
 import cn.icmyfuture.iarc.openapi.dto.Response;
 import cn.icmyfuture.iarc.openapi.netty.http.NettyHttpRequest;

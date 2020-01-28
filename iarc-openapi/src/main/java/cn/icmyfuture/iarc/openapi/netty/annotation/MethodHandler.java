@@ -1,24 +1,26 @@
 package cn.icmyfuture.iarc.openapi.netty.annotation;
 
+import cn.icmyfuture.iarc.openapi.netty.OpenAPIType;
+
 import java.lang.annotation.*;
 
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface UriHandler {
+public @interface MethodHandler {
     /**
-     * 请求uri
+     * 类型
      *
      * @return
      */
-    String uri() default "";
+    OpenAPIType type() default OpenAPIType.OPEN_API;
 
     /**
-     * 支持的提交方式
+     * 名称
      *
      * @return
      */
-    String method() default "POST";
+    String name() default "";
 
     /**
      * 是否需要完全匹配

@@ -1,4 +1,4 @@
-package cn.icmyfuture.iarc.openapi.netty.iohandler;
+package cn.icmyfuture.iarc.openapi.netty.handler.io;
 
 import cn.icmyfuture.iarc.openapi.netty.http.NettyHttpResponse;
 import io.netty.channel.ChannelFutureListener;

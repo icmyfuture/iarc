@@ -1,4 +1,4 @@
-package cn.icmyfuture.iarc.openapi.netty.iohandler;
+package cn.icmyfuture.iarc.openapi.netty.handler.io;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;

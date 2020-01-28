@@ -1,11 +1,15 @@
-package cn.icmyfuture.iarc.openapi.netty.iohandler;
+package cn.icmyfuture.iarc.openapi.netty.handler.io;
 
 import cn.icmyfuture.iarc.openapi.dto.Response;
+import cn.icmyfuture.iarc.openapi.netty.annotation.MethodHandler;
 import cn.icmyfuture.iarc.openapi.netty.annotation.NettyHttpHandler;
+import cn.icmyfuture.iarc.openapi.netty.annotation.UriHandler;
 import cn.icmyfuture.iarc.openapi.netty.exception.IllegalMethodNotAllowedException;
 import cn.icmyfuture.iarc.openapi.netty.exception.IllegalPathDuplicatedException;
 import cn.icmyfuture.iarc.openapi.netty.exception.IllegalPathNotFoundException;
-import cn.icmyfuture.iarc.openapi.netty.handler.IFunctionHandler;
+import cn.icmyfuture.iarc.openapi.netty.handler.function.IFunctionHandler;
+import cn.icmyfuture.iarc.openapi.netty.handler.method.IMethodHandler;
+import cn.icmyfuture.iarc.openapi.netty.handler.uri.IUriHandler;
 import cn.icmyfuture.iarc.openapi.netty.http.NettyHttpRequest;
 import cn.icmyfuture.iarc.openapi.netty.http.NettyHttpResponse;
 import cn.icmyfuture.iarc.openapi.netty.path.Path;
@@ -42,6 +46,8 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpServerHandler.class);
 
     private HashMap<Path, IFunctionHandler> functionHandlerMap = new HashMap<>();
+
+    private HashMap<String, IUriHandler> uriHandlerMap = new HashMap<>();
 
     /**
      * 线程工厂
@@ -134,6 +140,39 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
             }
             functionHandlerMap.put(path, (IFunctionHandler) handler);
         }
+        setUriHandlerMap(applicationContext);
+    }
+
+    private void setUriHandlerMap(ApplicationContext applicationContext){
+        Map<String, Object> handlers = applicationContext.getBeansWithAnnotation(UriHandler.class);
+        Map<String, Object> methodHandlers = applicationContext.getBeansWithAnnotation(MethodHandler.class);
+        for (Map.Entry<String, Object> entry : handlers.entrySet()) {
+            Object handler = entry.getValue();
+            UriHandler h = handler.getClass().getAnnotation(UriHandler.class);
+            String uri = h.uri();
+            if (uriHandlerMap.containsKey(uri)) {
+                LOGGER.error("IUriHandler has duplicated :" + uri, new IllegalPathDuplicatedException());
+                System.exit(0);
+            }
+            IUriHandler hi = (IUriHandler) handler;
+            uriHandlerMap.put(uri, hi);
+            setMethodHandlerMapForUriHandler(hi, methodHandlers);
+        }
+    }
+
+    private void setMethodHandlerMapForUriHandler(IUriHandler handler, Map<String, Object> handlers) {
+        HashMap<String, IMethodHandler> map = new HashMap<>();
+        for (Map.Entry<String, Object> entry : handlers.entrySet()) {
+            Object h = entry.getValue();
+            MethodHandler m = h.getClass().getAnnotation(MethodHandler.class);
+            if(handler.getOpenApiType() == m.type()) {
+                String key = m.name();
+                if(!map.containsKey(key)) {
+                    map.put(key, (IMethodHandler) h);
+                }
+            }
+        }
+        handler.setMethodHandlerMap(map);
     }
 
     private IFunctionHandler matchFunctionHandler(NettyHttpRequest request) throws IllegalPathNotFoundException, IllegalMethodNotAllowedException {

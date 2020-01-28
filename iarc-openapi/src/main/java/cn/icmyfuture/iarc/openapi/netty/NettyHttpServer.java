@@ -1,8 +1,8 @@
 package cn.icmyfuture.iarc.openapi.netty;
 
-import cn.icmyfuture.iarc.openapi.netty.iohandler.FilterLoggingHandler;
-import cn.icmyfuture.iarc.openapi.netty.iohandler.InterceptorHandler;
-import cn.icmyfuture.iarc.openapi.netty.iohandler.HttpServerHandler;
+import cn.icmyfuture.iarc.openapi.netty.handler.io.FilterLoggingHandler;
+import cn.icmyfuture.iarc.openapi.netty.handler.io.HttpServerHandler;
+import cn.icmyfuture.iarc.openapi.netty.handler.io.InterceptorHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -66,7 +66,7 @@ public class NettyHttpServer {
                     "* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n" +
                     "*                                                                                   *\n" +
                     "*                                                                                   *\n" +
-                    "*                   Netty Http Server started on port {}.                           *\n" +
+                    "*                   Netty Http Server started on port {}                            *\n" +
                     "*                                                                                   *\n" +
                     "*                                                                                   *\n" +
                     "* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n";
