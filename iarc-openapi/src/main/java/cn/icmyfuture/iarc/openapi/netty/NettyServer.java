@@ -26,7 +26,7 @@ public class NettyServer {
 
     @Autowired
     ServerChannelInitializer serverChannelInitializer;
-    @Value("${n.port}")
+    @Value("${server.port}")
     private Integer port;
 
     public ChannelFuture start() {
