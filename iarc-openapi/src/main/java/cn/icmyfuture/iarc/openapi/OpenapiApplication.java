@@ -2,6 +2,7 @@ package cn.icmyfuture.iarc.openapi;
 
 import cn.icmyfuture.iarc.openapi.netty.NettyHttpServer;
 import cn.icmyfuture.iarc.openapi.netty.annotation.NettyHttpHandler;
+import cn.icmyfuture.iarc.openapi.netty.annotation.UriHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -13,6 +14,7 @@ import org.springframework.context.annotation.ComponentScan;
  * 扫描NettyHttpHandler上的注解
  */
 @ComponentScan(includeFilters = @ComponentScan.Filter(NettyHttpHandler.class))
+@ComponentScan(includeFilters = @ComponentScan.Filter(UriHandler.class))
 public class OpenapiApplication implements CommandLineRunner {
 
     public static void main(String[] args) {

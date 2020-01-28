@@ -11,8 +11,8 @@ import java.net.SocketAddress;
 import static io.netty.handler.codec.http.HttpHeaderNames.CONTENT_LENGTH;
 import static io.netty.handler.codec.http.HttpHeaderNames.CONTENT_TYPE;
 
-public class FilterLogginglHandler extends LoggingHandler {
-    public FilterLogginglHandler() {
+public class FilterLoggingHandler extends LoggingHandler {
+    public FilterLoggingHandler() {
         super(LogLevel.INFO);
     }
 
