@@ -13,11 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-/**
- * description:
- * author:
- * date: 2018-11-28 12:07
- **/
 @Component
 public class NettyServer {
 
@@ -34,11 +29,6 @@ public class NettyServer {
     @Value("${n.port}")
     private Integer port;
 
-    /**
-     * 开启Netty服务
-     *
-     * @return
-     */
     public ChannelFuture start() {
         //启动类
         ServerBootstrap serverBootstrap = new ServerBootstrap();
@@ -59,9 +49,6 @@ public class NettyServer {
         return channelFuture1;
     }
 
-    /**
-     * 停止Netty服务
-     */
     public void destroy() {
         if (channel != null) {
             channel.close();
@@ -70,5 +57,4 @@ public class NettyServer {
         boss.shutdownGracefully();
         log.info("Netty server shutdown success");
     }
-
 }
