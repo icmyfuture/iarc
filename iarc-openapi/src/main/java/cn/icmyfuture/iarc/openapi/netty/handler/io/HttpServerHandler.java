@@ -2,6 +2,7 @@ package cn.icmyfuture.iarc.openapi.netty.handler.io;
 
 import cn.icmyfuture.iarc.openapi.dto.Response;
 import cn.icmyfuture.iarc.openapi.dto.Request;
+import cn.icmyfuture.iarc.openapi.helper.JsonHelper;
 import cn.icmyfuture.iarc.openapi.netty.annotation.MethodHandler;
 import cn.icmyfuture.iarc.openapi.netty.annotation.UriHandler;
 import cn.icmyfuture.iarc.openapi.netty.entity.NettyHttpRequest;
@@ -11,7 +12,6 @@ import cn.icmyfuture.iarc.openapi.netty.exception.IllegalPathDuplicatedException
 import cn.icmyfuture.iarc.openapi.netty.exception.IllegalPathNotFoundException;
 import cn.icmyfuture.iarc.openapi.netty.handler.IMethodHandler;
 import cn.icmyfuture.iarc.openapi.netty.handler.IUriHandler;
-import com.google.gson.GsonBuilder;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -100,8 +100,8 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
             methodHandler = matchMethodHandler(request);
             ParameterizedType parameterizedType = (ParameterizedType)methodHandler.getClass().getGenericInterfaces()[0];
             Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
-            String requestStr = "{}";
-            Object obj = new GsonBuilder().create().fromJson(requestStr, actualTypeArguments[0]);
+            String requestStr = getRequestDataStr(request);
+            Object obj = JsonHelper.fromJson(requestStr, actualTypeArguments[0]);
             Object result = methodHandler.execute(new Request(obj, request));
             return NettyHttpResponse.ok(Response.ok(result).toPlainJSONString());
         } catch (IllegalMethodNotAllowedException error) {
@@ -112,6 +112,10 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
             LOGGER.error(methodHandler.getClass().getSimpleName() + " Error", error);
             return NettyHttpResponse.makeError(error);
         }
+    }
+
+    private String getRequestDataStr(NettyHttpRequest request) {
+        return "{}";
     }
 
     /**

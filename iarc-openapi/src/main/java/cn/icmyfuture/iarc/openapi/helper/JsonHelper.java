@@ -12,11 +12,11 @@ public class JsonHelper {
         return gson.toJson(obj);
     }
 
-    public static void fromJson(String str, Type type) {
-        gson.fromJson(str, type);
+    public static Object fromJson(String str, Type type) {
+        return gson.fromJson(str, type);
     }
 
-    public static void fromJson(String str, Class clazz) {
-        gson.fromJson(str, clazz);
+    public static Object fromJson(String str, Class clazz) {
+        return gson.fromJson(str, clazz);
     }
 }
