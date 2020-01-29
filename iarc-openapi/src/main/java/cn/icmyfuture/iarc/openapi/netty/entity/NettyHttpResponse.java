@@ -1,4 +1,4 @@
-package cn.icmyfuture.iarc.openapi.netty.http;
+package cn.icmyfuture.iarc.openapi.netty.entity;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.PooledByteBufAllocator;

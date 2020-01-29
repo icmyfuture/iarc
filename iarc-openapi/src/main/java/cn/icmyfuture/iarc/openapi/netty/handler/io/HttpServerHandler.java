@@ -1,18 +1,17 @@
 package cn.icmyfuture.iarc.openapi.netty.handler.io;
 
 import cn.icmyfuture.iarc.openapi.dto.Response;
+import cn.icmyfuture.iarc.openapi.dto.Request;
 import cn.icmyfuture.iarc.openapi.netty.annotation.MethodHandler;
-import cn.icmyfuture.iarc.openapi.netty.annotation.NettyHttpHandler;
 import cn.icmyfuture.iarc.openapi.netty.annotation.UriHandler;
+import cn.icmyfuture.iarc.openapi.netty.entity.NettyHttpRequest;
+import cn.icmyfuture.iarc.openapi.netty.entity.NettyHttpResponse;
 import cn.icmyfuture.iarc.openapi.netty.exception.IllegalMethodNotAllowedException;
 import cn.icmyfuture.iarc.openapi.netty.exception.IllegalPathDuplicatedException;
 import cn.icmyfuture.iarc.openapi.netty.exception.IllegalPathNotFoundException;
-import cn.icmyfuture.iarc.openapi.netty.handler.function.IFunctionHandler;
-import cn.icmyfuture.iarc.openapi.netty.handler.method.IMethodHandler;
-import cn.icmyfuture.iarc.openapi.netty.handler.uri.IUriHandler;
-import cn.icmyfuture.iarc.openapi.netty.http.NettyHttpRequest;
-import cn.icmyfuture.iarc.openapi.netty.http.NettyHttpResponse;
-import cn.icmyfuture.iarc.openapi.netty.path.Path;
+import cn.icmyfuture.iarc.openapi.netty.handler.IMethodHandler;
+import cn.icmyfuture.iarc.openapi.netty.handler.IUriHandler;
+import com.google.gson.GsonBuilder;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -27,14 +26,12 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 @ChannelHandler.Sharable
 @Component
@@ -44,8 +41,6 @@ import java.util.stream.Stream;
 public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> implements ApplicationContextAware {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpServerHandler.class);
-
-    private HashMap<Path, IFunctionHandler> functionHandlerMap = new HashMap<>();
 
     private HashMap<String, IUriHandler> uriHandlerMap = new HashMap<>();
 
@@ -97,20 +92,24 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
      */
     private FullHttpResponse handleHttpRequest(NettyHttpRequest request) {
 
-        IFunctionHandler functionHandler = null;
+        IMethodHandler methodHandler = null;
         /**
          * 请求处理并根据不同的结果或者捕获的异常进行状态码转换并返回
          */
         try {
-            functionHandler = matchFunctionHandler(request);
-            Response response = functionHandler.execute(request);
-            return NettyHttpResponse.ok(response.toJSONString());
+            methodHandler = matchMethodHandler(request);
+            ParameterizedType parameterizedType = (ParameterizedType)methodHandler.getClass().getGenericInterfaces()[0];
+            Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
+            String requestStr = "{}";
+            Object obj = new GsonBuilder().create().fromJson(requestStr, actualTypeArguments[0]);
+            Object result = methodHandler.execute(new Request(obj, request));
+            return NettyHttpResponse.ok(Response.ok(result).toPlainJSONString());
         } catch (IllegalMethodNotAllowedException error) {
             return NettyHttpResponse.make(HttpResponseStatus.METHOD_NOT_ALLOWED);
         } catch (IllegalPathNotFoundException error) {
             return NettyHttpResponse.make(HttpResponseStatus.NOT_FOUND);
         } catch (Exception error) {
-            LOGGER.error(functionHandler.getClass().getSimpleName() + " Error", error);
+            LOGGER.error(methodHandler.getClass().getSimpleName() + " Error", error);
             return NettyHttpResponse.makeError(error);
         }
     }
@@ -122,34 +121,21 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
      */
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) {
-        /**
-         * 获得所有NettyHttpHandler的注解类
-         */
-        Map<String, Object> handlers = applicationContext.getBeansWithAnnotation(NettyHttpHandler.class);
-        for (Map.Entry<String, Object> entry : handlers.entrySet()) {
-            Object handler = entry.getValue();
-            Path path = Path.make(handler.getClass().getAnnotation(NettyHttpHandler.class));
-            /**
-             * 查询是否当前处理器的注解是否已经存在（类似于SSM中controler的注解不能重复）
-             * 1.存在则抛出异常
-             * 2. 不存在则存入Map集合中 在SSM中是通过对类方法注解的扫描 存入内部类mapperRegistry中
-             */
-            if (functionHandlerMap.containsKey(path)) {
-                LOGGER.error("IFunctionHandler has duplicated :" + path.toString(), new IllegalPathDuplicatedException());
-                System.exit(0);
-            }
-            functionHandlerMap.put(path, (IFunctionHandler) handler);
-        }
         setUriHandlerMap(applicationContext);
     }
 
-    private void setUriHandlerMap(ApplicationContext applicationContext){
+    private void setUriHandlerMap(ApplicationContext applicationContext) {
         Map<String, Object> handlers = applicationContext.getBeansWithAnnotation(UriHandler.class);
         Map<String, Object> methodHandlers = applicationContext.getBeansWithAnnotation(MethodHandler.class);
         for (Map.Entry<String, Object> entry : handlers.entrySet()) {
             Object handler = entry.getValue();
             UriHandler h = handler.getClass().getAnnotation(UriHandler.class);
             String uri = h.uri();
+            /**
+             * 查询是否当前处理器的注解是否已经存在（类似于SSM中controler的注解不能重复）
+             * 1.存在则抛出异常
+             * 2. 不存在则存入Map集合中 在SSM中是通过对类方法注解的扫描 存入内部类mapperRegistry中
+             */
             if (uriHandlerMap.containsKey(uri)) {
                 LOGGER.error("IUriHandler has duplicated :" + uri, new IllegalPathDuplicatedException());
                 System.exit(0);
@@ -165,9 +151,9 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
         for (Map.Entry<String, Object> entry : handlers.entrySet()) {
             Object h = entry.getValue();
             MethodHandler m = h.getClass().getAnnotation(MethodHandler.class);
-            if(handler.getOpenApiType() == m.type()) {
+            if (handler.getOpenApiType() == m.type()) {
                 String key = m.name();
-                if(!map.containsKey(key)) {
+                if (!map.containsKey(key)) {
                     map.put(key, (IMethodHandler) h);
                 }
             }
@@ -175,41 +161,18 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
         handler.setMethodHandlerMap(map);
     }
 
-    private IFunctionHandler matchFunctionHandler(NettyHttpRequest request) throws IllegalPathNotFoundException, IllegalMethodNotAllowedException {
+    private IMethodHandler matchMethodHandler(NettyHttpRequest request) throws IllegalPathNotFoundException, IllegalMethodNotAllowedException {
+        String uri = request.getUri();
+        String method = "Common.GetAreaList";
 
-        AtomicBoolean matched = new AtomicBoolean(false);
-
-        Stream<Path> stream = functionHandlerMap.keySet().stream()
-                .filter(((Predicate<Path>) path -> {
-                    /**
-                     *过滤 Path URI 不匹配的
-                     */
-                    if (request.matched(path.getUri(), path.isEqual())) {
-                        matched.set(true);
-                        return matched.get();
-                    }
-                    return false;
-
-                }).and(path -> {
-                    /**
-                     * 过滤 Method 匹配的
-                     */
-                    return request.isAllowed(path.getMethod());
-                }));
-
-        Optional<Path> optional = stream.findFirst();
-
-        stream.close();
-
-        if (!optional.isPresent() && !matched.get()) {
-            throw new IllegalPathNotFoundException();
-        }
-
-        if (!optional.isPresent() && matched.get()) {
+        if(uriHandlerMap.containsKey(uri)){
+            IUriHandler uriHandler = uriHandlerMap.get(uri);
+            Map<String, IMethodHandler> methodHandlerMap = uriHandler.getMethodHandlerMap();
+            if(methodHandlerMap.containsKey(method)){
+                return methodHandlerMap.get(method);
+            }
             throw new IllegalMethodNotAllowedException();
         }
-
-        return functionHandlerMap.get(optional.get());
+        throw new IllegalPathNotFoundException();
     }
-
 }

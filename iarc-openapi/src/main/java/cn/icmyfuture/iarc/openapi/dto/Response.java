@@ -1,6 +1,6 @@
 package cn.icmyfuture.iarc.openapi.dto;
 
-import com.google.gson.GsonBuilder;
+import cn.icmyfuture.iarc.openapi.helper.JsonHelper;
 
 public final class Response<T> {
     private int code;
@@ -23,7 +23,14 @@ public final class Response<T> {
     }
 
     public String toJSONString() {
-        return new GsonBuilder().create().toJson(this);
+        return JsonHelper.toJson(this);
+    }
+
+    public String toPlainJSONString() {
+        if(this.data instanceof String) {
+            return JsonHelper.toJson(this);
+        }
+        return JsonHelper.toJson(new Response<>(this.code, this.message, JsonHelper.toJson(this.data)));
     }
 
     public int getCode() {

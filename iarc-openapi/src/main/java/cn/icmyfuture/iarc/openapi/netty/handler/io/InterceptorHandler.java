@@ -1,6 +1,6 @@
 package cn.icmyfuture.iarc.openapi.netty.handler.io;
 
-import cn.icmyfuture.iarc.openapi.netty.http.NettyHttpResponse;
+import cn.icmyfuture.iarc.openapi.netty.entity.NettyHttpResponse;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;

@@ -1,8 +1,9 @@
 package cn.icmyfuture.iarc.openapi.netty.handler.uri;
 
-import cn.icmyfuture.iarc.openapi.netty.OpenAPIType;
+import cn.icmyfuture.iarc.openapi.netty.entity.OpenAPIType;
 import cn.icmyfuture.iarc.openapi.netty.annotation.UriHandler;
-import cn.icmyfuture.iarc.openapi.netty.handler.method.IMethodHandler;
+import cn.icmyfuture.iarc.openapi.netty.handler.IMethodHandler;
+import cn.icmyfuture.iarc.openapi.netty.handler.IUriHandler;
 
 import java.util.HashMap;
 

@@ -1,6 +1,6 @@
 package cn.icmyfuture.iarc.openapi.netty.annotation;
 
-import cn.icmyfuture.iarc.openapi.netty.OpenAPIType;
+import cn.icmyfuture.iarc.openapi.netty.entity.OpenAPIType;
 
 import java.lang.annotation.*;
 

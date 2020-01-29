@@ -1,4 +1,4 @@
-package cn.icmyfuture.iarc.openapi.netty;
+package cn.icmyfuture.iarc.openapi.netty.entity;
 
 public enum OpenAPIType {
     OPEN_API,

@@ -2,7 +2,6 @@ package cn.icmyfuture.iarc.openapi;
 
 import cn.icmyfuture.iarc.openapi.netty.NettyHttpServer;
 import cn.icmyfuture.iarc.openapi.netty.annotation.MethodHandler;
-import cn.icmyfuture.iarc.openapi.netty.annotation.NettyHttpHandler;
 import cn.icmyfuture.iarc.openapi.netty.annotation.UriHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -14,7 +13,6 @@ import org.springframework.context.annotation.ComponentScan;
 /**
  * 扫描Handler上的注解
  */
-@ComponentScan(includeFilters = @ComponentScan.Filter(NettyHttpHandler.class))
 @ComponentScan(includeFilters = @ComponentScan.Filter(UriHandler.class))
 @ComponentScan(includeFilters = @ComponentScan.Filter(MethodHandler.class))
 public class OpenapiApplication implements CommandLineRunner {
@@ -33,8 +31,5 @@ public class OpenapiApplication implements CommandLineRunner {
     @Override
     public void run(String... args) {
         nettyHttpServer.start();
-//        ChannelFuture start = nettyServer.start();
-//        Runtime.getRuntime().addShutdownHook(new Thread(() -> nettyServer.destroy()));
-//        start.channel().closeFuture().syncUninterruptibly();
     }
 }
