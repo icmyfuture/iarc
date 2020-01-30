@@ -5,11 +5,11 @@ import cn.icmyfuture.iarc.openapi.netty.annotation.UriHandler;
 import cn.icmyfuture.iarc.openapi.netty.handler.IMethodHandler;
 import cn.icmyfuture.iarc.openapi.netty.handler.IUriHandler;
 
-import java.util.HashMap;
+import java.util.Map;
 
 @UriHandler(uri = "/device.api")
 public class DeviceAPIHandler implements IUriHandler {
-    private HashMap<String, IMethodHandler> map;
+    private Map<String, IMethodHandler> map;
 
     @Override
     public OpenAPIType getOpenApiType() {
@@ -17,12 +17,12 @@ public class DeviceAPIHandler implements IUriHandler {
     }
 
     @Override
-    public HashMap<String, IMethodHandler> getMethodHandlerMap() {
+    public Map<String, IMethodHandler> getMethodHandlerMap() {
         return this.map;
     }
 
     @Override
-    public void setMethodHandlerMap(HashMap<String, IMethodHandler> handlers) {
+    public void setMethodHandlerMap(Map<String, IMethodHandler> handlers) {
         this.map = handlers;
     }
 }

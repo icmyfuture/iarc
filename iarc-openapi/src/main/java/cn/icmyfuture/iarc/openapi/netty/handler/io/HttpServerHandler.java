@@ -42,7 +42,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpServerHandler.class);
 
-    private HashMap<String, IUriHandler> uriHandlerMap = new HashMap<>();
+    private Map<String, IUriHandler> uriHandlerMap = new HashMap<>();
 
     /**
      * 线程工厂
