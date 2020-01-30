@@ -1,17 +1,21 @@
 package cn.icmyfuture.iarc.openapi.netty.handler.io;
 
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.util.CharsetUtil;
+import org.springframework.stereotype.Component;
 
 import java.net.SocketAddress;
 
 import static io.netty.handler.codec.http.HttpHeaderNames.CONTENT_LENGTH;
 import static io.netty.handler.codec.http.HttpHeaderNames.CONTENT_TYPE;
 
+@ChannelHandler.Sharable
+@Component
 public class FilterLoggingHandler extends LoggingHandler {
     public FilterLoggingHandler() {
         super(LogLevel.INFO);
@@ -44,9 +48,9 @@ public class FilterLoggingHandler extends LoggingHandler {
 
     @Override
     public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) {
-        if (this.logger.isEnabled(this.internalLevel)) {
-            this.logger.log(this.internalLevel, ctx.channel().toString() + " WRITE \n" + msg.toString());
-        }
+//        if (this.logger.isEnabled(this.internalLevel)) {
+//            this.logger.log(this.internalLevel, ctx.channel().toString() + " WRITE \n" + msg.toString());
+//        }
 
         ctx.write(msg, promise);
     }

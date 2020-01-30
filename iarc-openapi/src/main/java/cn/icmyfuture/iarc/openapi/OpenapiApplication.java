@@ -15,14 +15,10 @@ import org.springframework.context.annotation.ComponentScan;
  */
 @ComponentScan(includeFilters = @ComponentScan.Filter(UriHandler.class))
 @ComponentScan(includeFilters = @ComponentScan.Filter(MethodHandler.class))
-public class OpenapiApplication implements CommandLineRunner {
+public class OpenAPIApplication implements CommandLineRunner {
 
     public static void main(String[] args) {
-        SpringApplication.run(OpenapiApplication.class, args);
-//        若不使用配置则使用以下代码，实现无tomcat启动
-//        SpringApplication app = new SpringApplication(OpenapiApplication.class);
-//        app.setWebEnvironment(false);
-//        app.run(args);
+        SpringApplication.run(OpenAPIApplication.class, args);
     }
 
     @Autowired

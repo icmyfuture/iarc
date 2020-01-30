@@ -29,6 +29,9 @@ public class NettyHttpServer {
     private int port;
 
     @Resource
+    private FilterLoggingHandler filterLoggingHandler;
+
+    @Resource
     private InterceptorHandler interceptorHandler;
 
     @Resource
@@ -54,7 +57,7 @@ public class NettyHttpServer {
                 ch.pipeline().addLast("codec", new HttpServerCodec());//http编解码器
                 //对httpmsg进行聚合 转化为fullHttpRequest 或者fullHttpResponse并设置最大数据长度
                 ch.pipeline().addLast("aggregator", new HttpObjectAggregator(512 * 1024));
-                ch.pipeline().addLast("logging", new FilterLoggingHandler());//日志
+                ch.pipeline().addLast("logging", filterLoggingHandler);//日志
                 ch.pipeline().addLast("interceptor", interceptorHandler);//拦截器配置
                 ch.pipeline().addLast("bizHandler", httpServerHandler); //请求匹配处理
             }

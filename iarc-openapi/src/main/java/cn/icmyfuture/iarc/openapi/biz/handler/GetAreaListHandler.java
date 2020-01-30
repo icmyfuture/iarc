@@ -6,10 +6,18 @@ import cn.icmyfuture.iarc.openapi.netty.entity.OpenAPIType;
 import cn.icmyfuture.iarc.openapi.netty.annotation.MethodHandler;
 import cn.icmyfuture.iarc.openapi.netty.handler.IMethodHandler;
 
-@MethodHandler(type= OpenAPIType.OPEN_API, name="Common.GetAreaList")
-public class GetAreaListHandler implements IMethodHandler<Area, String> {
+import java.util.ArrayList;
+import java.util.List;
+
+@MethodHandler(type = OpenAPIType.OPEN_API, name = "Common.GetAreaList")
+public class GetAreaListHandler implements IMethodHandler<Area, List<Area>> {
     @Override
-    public String execute(Request<Area> request) {
-        return "OK";
+    public List<Area> execute(Request<Area> request) {
+        List<Area> areaList = new ArrayList<>();
+        int count = 1000;
+        for (int i = 0; i < count; i++) {
+            areaList.add(new Area(String.format("Area: %s", i)));
+        }
+        return areaList;
     }
 }

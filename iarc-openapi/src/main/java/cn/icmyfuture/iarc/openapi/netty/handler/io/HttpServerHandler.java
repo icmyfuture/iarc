@@ -98,7 +98,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
          */
         try {
             methodHandler = matchMethodHandler(request);
-            ParameterizedType parameterizedType = (ParameterizedType)methodHandler.getClass().getGenericInterfaces()[0];
+            ParameterizedType parameterizedType = (ParameterizedType) methodHandler.getClass().getGenericInterfaces()[0];
             Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
             String requestStr = getRequestDataStr(request);
             Object obj = JsonHelper.fromJson(requestStr, actualTypeArguments[0]);
@@ -169,10 +169,10 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
         String uri = request.getUri();
         String method = "Common.GetAreaList";
 
-        if(uriHandlerMap.containsKey(uri)){
+        if (uriHandlerMap.containsKey(uri)) {
             IUriHandler uriHandler = uriHandlerMap.get(uri);
             Map<String, IMethodHandler> methodHandlerMap = uriHandler.getMethodHandlerMap();
-            if(methodHandlerMap.containsKey(method)){
+            if (methodHandlerMap.containsKey(method)) {
                 return methodHandlerMap.get(method);
             }
             throw new IllegalMethodNotAllowedException();
