@@ -2,9 +2,10 @@ package cn.icmyfuture.iarc.openapi.netty.handler.io;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
-import io.netty.handler.codec.http.HttpRequest;
+import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.netty.util.CharsetUtil;
 
 import java.net.SocketAddress;
 
@@ -53,18 +54,23 @@ public class FilterLoggingHandler extends LoggingHandler {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
         if (this.logger.isEnabled(this.internalLevel)) {
-            HttpRequest request = (HttpRequest) msg;
-            String log = request.method() + " " + request.uri() + " " + request.protocolVersion() + "\n" +
-                    CONTENT_TYPE + ": " + request.headers().get(CONTENT_TYPE) + "\n" +
-                    CONTENT_LENGTH + ": " + request.headers().get(CONTENT_LENGTH) + "\n";
-            this.logger.log(this.internalLevel, ctx.channel().toString() + " READ \n" + log);
+            FullHttpRequest request = (FullHttpRequest) msg;
+            Integer length = Integer.parseInt(request.headers().get(CONTENT_LENGTH));
+            String bodyStr = length > 0 ? String.format("BODY: %s \n", request.content().toString(CharsetUtil.UTF_8)) : "";
+            String logStr = String.format("%s READ \n %s %s %s \n %s: %s \n %s: %s \n %s",
+                    ctx.channel().toString(),
+                    request.method(), request.uri(), request.protocolVersion(),
+                    CONTENT_TYPE, request.headers().get(CONTENT_TYPE),
+                    CONTENT_LENGTH, length,
+                    bodyStr
+            );
+            this.logger.log(this.internalLevel, logStr);
         }
         /**
          * 请求转发给下个处理器
          */
         ctx.fireChannelRead(msg);
     }
-
 
     @Override
     public void bind(ChannelHandlerContext ctx, SocketAddress localAddress, ChannelPromise promise) {

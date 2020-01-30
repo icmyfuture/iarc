@@ -6,7 +6,7 @@ import com.google.gson.GsonBuilder;
 import java.lang.reflect.Type;
 
 public class JsonHelper {
-    private static Gson gson = new GsonBuilder().create();;
+    private static Gson gson = new GsonBuilder().create();
 
     public static String toJson(Object obj){
         return gson.toJson(obj);
