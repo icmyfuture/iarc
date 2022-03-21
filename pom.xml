@@ -41,7 +41,7 @@
 		<mybatis.spring.boot.starter.version>1.2.0</mybatis.spring.boot.starter.version>
 		<mssql-jdbc.version>6.1.7.jre8-preview</mssql-jdbc.version>
 
-        <dubbo.version>2.5.8</dubbo.version>
+        <dubbo.version>2.6.9</dubbo.version>
         <dubbo-spring-boot.version>1.0.0</dubbo-spring-boot.version>
 
 		<swagger2.version>2.6.1</swagger2.version>
